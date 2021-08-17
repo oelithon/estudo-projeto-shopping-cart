@@ -24,27 +24,11 @@ function createProductItemElement({ sku, name, image }) {
   return section;
 }
 
-function getSkuFromProductItem(item) {
-  return item.querySelector('span.item__sku').innerText;
-}
-
-function cartItemClickListener(event) {
-  // coloque seu código aqui
-}
-
-function createCartItemElement({ sku, name, salePrice }) {
-  const li = document.createElement('li');
-  li.className = 'cart__item';
-  li.innerText = `SKU: ${sku} | NAME: ${name} | PRICE: $${salePrice}`;
-  li.addEventListener('click', cartItemClickListener);
-  return li;
-}
-
 function getAPI() {
   const mercadoLivreAPI = fetch('https://api.mercadolibre.com/sites/MLB/search?q=$computador');
   mercadoLivreAPI.then((response) => {
-    const resultJSON = response.json();
-    resultJSON.then((data) => {
+    const dataBase = response.json();
+    dataBase.then((data) => {
       data.results.forEach((product) => {
         const item = {
           sku: product.id,
@@ -58,6 +42,51 @@ function getAPI() {
   });
 }
 
+function getSkuFromProductItem(item) {
+  return item.querySelector('span.item__sku').innerText;
+}
+
+function cartItemClickListener(event) {
+  // coloque seu código aqui
+}
+
+function createCartItemElement({ sku, name, salePrice }) {
+  const listItems = document.querySelector('.cart__items');
+  const li = document.createElement('li');
+  li.className = 'cart__item';
+  li.innerText = `SKU: ${sku} | NAME: ${name} | PRICE: $${salePrice}`;
+  li.addEventListener('click', cartItemClickListener);
+  listItems.appendChild(li);
+  return li;
+}
+
+function getPriceInAPI(searchId) {
+  const productPrice = fetch(`https://api.mercadolibre.com/items/${searchId}`);
+  productPrice.then((response) => {
+    const dataBase = response.json();
+    dataBase.then((data) => {
+      // const item = {
+      //   sku: data.id,
+      //   name: data.title,
+      //   salePrice: data.price,
+      // };
+      createCartItemElement({ sku: data.id, name: data.title, salePrice: data.price });
+    });
+  });
+}
+
+const cartList = () => {
+  const selectItem = document.querySelectorAll('.item__add');
+  console.log(selectItem);
+  selectItem.forEach((button) => {
+    button.addEventListener('click', (event) => {
+      const searchId = event.target.parentNode.firstChild.innerText;
+      getPriceInAPI(searchId);
+    });
+  });
+};
+
 window.onload = () => {
   getAPI();
+  cartList();
 };
