@@ -24,6 +24,9 @@ function createProductItemElement({ sku, name, image }) {
   return section;
 }
 
+// Função responsável por fazer requisição da API do Mercado Livre, buscando por 'computador';
+// Com ela eu obtenho uma lista de produtos e extraio od dados de ID, Nome e Imagem de demostração;
+// Faz appendChild() dos dados tratados na função createProductItemElement() e os insere em uma ol.
 function getAPI() {
   const mercadoLivreAPI = fetch('https://api.mercadolibre.com/sites/MLB/search?q=$computador');
   mercadoLivreAPI.then((response) => {
@@ -42,14 +45,18 @@ function getAPI() {
   });
 }
 
+// Verifica se um elemento filho contém tag span com class='item__sku' e pega seu texto. Dessa forma foi possível obter o ID de um produto.
+// Essa função está sendo chamada como parametro de getPriceInAPI() dentro do evento de click mais abaixo na página.
 function getSkuFromProductItem(item) {
   return item.querySelector('span.item__sku').innerText;
 }
 
+// Função responsável por remover um item selecionado. Ela faz referência a cada li criada pela função createCartItemElement().
 function cartItemClickListener(event) {
   event.target.remove();
 }
 
+// A função cria listas a partir dos valores das chaves passadas de forma desestruturada em seu parâmetro, essa função está sendo chamada dentro da função getPriceInAPI() dentro de um appendChild().
 function createCartItemElement({ sku, name, salePrice }) {
   const li = document.createElement('li');
   li.className = 'cart__item';
@@ -58,6 +65,9 @@ function createCartItemElement({ sku, name, salePrice }) {
   return li;
 }
 
+// Faz requisição da API para obter ID, Nome e Preço salvando essas informações em um objeto;
+// Faz chamada da função createCartItemElement() que usa esses dados para criar listas com os dados do produto selecionado no carrinho de compras;
+// Faz appendChild() das listas criadas pela função createCartItemElement() em uma ol.
 function getPriceInAPI(searchId) {
   const productPrice = fetch(`https://api.mercadolibre.com/items/${searchId}`);
   productPrice.then((response) => {
@@ -74,6 +84,8 @@ function getPriceInAPI(searchId) {
   });
 }
 
+// Evento de click, verifica se o alvo contém uma classe específica;
+// Se sim, faz retorno da função getPriceInAPI() que recebeu como parâmetro a função getSkuFromProductItem() que tem como parametro uma eventTarget verificando o parentElement do alvo clicado.
 document.addEventListener('click', (docEvent) => {
   if (docEvent.target.classList.contains('item__add') === true) {
     return getPriceInAPI(getSkuFromProductItem(docEvent.target.parentElement));
