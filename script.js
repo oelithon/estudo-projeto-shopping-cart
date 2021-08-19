@@ -51,10 +51,22 @@ function getSkuFromProductItem(item) {
   return item.querySelector('span.item__sku').innerText;
 }
 
+const ol = document.querySelector('.cart__items');
+
+// Salva lista do carrinho no Local Storage.
+function cartItemLocalStorage() {
+  localStorage.setItem('cartItems', ol.innerHTML);
+}
+
 // Função responsável por remover um item selecionado. Ela faz referência a cada li criada pela função createCartItemElement().
 function cartItemClickListener(event) {
   event.target.remove();
+
+  // A função cartItemLocalStorage() foi chamada aqui para atualizar a ol após remover um produto.
+  cartItemLocalStorage();
 }
+
+ol.addEventListener('click', cartItemClickListener);
 
 // A função cria listas a partir dos valores das chaves passadas de forma desestruturada em seu parâmetro, essa função está sendo chamada dentro da função getPriceInAPI() dentro de um appendChild().
 function createCartItemElement({ sku, name, salePrice }) {
@@ -80,6 +92,7 @@ function getPriceInAPI(searchId) {
       };
       const listItems = document.querySelector('.cart__items');
       listItems.appendChild(createCartItemElement(item));
+      cartItemLocalStorage(); // cartItemLocalStorage() foi chamada aqui para atualizar o Local Storage a cada item adicionado.
     });
   });
 }
@@ -94,4 +107,5 @@ document.addEventListener('click', (docEvent) => {
 
 window.onload = () => {
   getAPI();
+  ol.innerHTML = localStorage.getItem('cartItems');
 };
