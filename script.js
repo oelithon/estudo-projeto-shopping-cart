@@ -53,10 +53,30 @@ function getSkuFromProductItem(item) {
 
 const ol = document.querySelector('.cart__items');
 
+function sumTotal(price = 0) {
+  const priceTotal = document.querySelector('.total-price');
+  priceTotal.innerText = `Valor total: ${price}`;
+}
+
 // Salva lista do carrinho no Local Storage.
 function cartItemLocalStorage() {
   localStorage.setItem('cartItems', ol.innerHTML);
 }
+
+const emptyCartButton = document.querySelector('.empty-cart');
+
+function emptyCart() {
+  // https://developer.mozilla.org/pt-BR/docs/Web/JavaScript/Reference/Statements/while
+  // Utilizei um exemplo da codumentação para fazer a verificação dos filhos do elemento pai e removê-los ao clicar no botão Esvaziar Carrinho.
+  while (ol.firstChild) {
+    ol.removeChild(ol.firstChild);
+  }
+
+  // A função cartItemLocalStorage() foi chamada aqui para atualizar a ol após remover um produto.
+  cartItemLocalStorage();
+}
+
+emptyCartButton.addEventListener('click', emptyCart);
 
 // Função responsável por remover um item selecionado. Ela faz referência a cada li criada pela função createCartItemElement().
 function cartItemClickListener(event) {
@@ -93,6 +113,7 @@ function getPriceInAPI(searchId) {
       const listItems = document.querySelector('.cart__items');
       listItems.appendChild(createCartItemElement(item));
       cartItemLocalStorage(); // cartItemLocalStorage() foi chamada aqui para atualizar o Local Storage a cada item adicionado.
+      sumTotal(item.salePrice);
     });
   });
 }
@@ -108,4 +129,5 @@ document.addEventListener('click', (docEvent) => {
 window.onload = () => {
   getAPI();
   ol.innerHTML = localStorage.getItem('cartItems');
+  sumTotal();
 };
