@@ -28,8 +28,11 @@ function createProductItemElement({ sku, name, image }) {
 // Com ela eu obtenho uma lista de produtos e extraio od dados de ID, Nome e Imagem de demostração;
 // Faz appendChild() dos dados tratados na função createProductItemElement() e os insere em uma ol.
 function getAPI() {
+  const loading = document.querySelector('.loading');
   const mercadoLivreAPI = fetch('https://api.mercadolibre.com/sites/MLB/search?q=$computador');
   mercadoLivreAPI.then((response) => {
+    // loading.remove() foi chamado depois do .then para remover a tela de loading ao carregar a api.
+    loading.remove();
     const dataBase = response.json();
     dataBase.then((data) => {
       data.results.forEach((product) => {
